@@ -212,6 +212,7 @@ fun addProductToFirestore(product: Product, context: Context) {
     db.collection("Products")
         .add(product)
         .addOnSuccessListener {
+            Log.d("MyApp", "Home "+context)
             Toast.makeText(context, "Product added successfully", Toast.LENGTH_SHORT).show()
         }
         .addOnFailureListener { e ->

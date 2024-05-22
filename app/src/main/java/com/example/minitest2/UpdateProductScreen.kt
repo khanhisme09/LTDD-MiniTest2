@@ -133,18 +133,13 @@ fun UpdateProductScreen(
             onClick = {
                 if (TextUtils.isEmpty(productName.value)) {
                     Toast.makeText(context, "Please enter product name", Toast.LENGTH_SHORT).show()
-                    //showToastMessage(message = "Please enter product name")
                 } else if (TextUtils.isEmpty(productType.value)) {
-                    Toast.makeText(context, "Please enter product type", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(context, "Please enter product type", Toast.LENGTH_SHORT).show()
                 } else if (TextUtils.isEmpty(productPrice.value)) {
-                    Toast.makeText(context, "Please enter product price", Toast.LENGTH_SHORT)
-                        .show()
-
+                    Toast.makeText(context, "Please enter product price", Toast.LENGTH_SHORT).show()
                 } else if (TextUtils.isEmpty(productImageLink.value)) {
                     Toast.makeText(context, "Please enter product image link", Toast.LENGTH_SHORT)
                         .show()
-
                 } else {
 
                     updateProductToFirestore(
@@ -156,12 +151,20 @@ fun UpdateProductScreen(
                             productImageLink.value
                         ), context
                     )
-                    updateProductToFirestore( productId, productName.value, productType.value, productPrice.value, productImageLink.value, context)
+                    //updateProductToFirestore( productId, productName.value, productType.value, productPrice.value, productImageLink.value, context)
+                    updateProductToFirestore(
+                        Product(
+                            productId,
+                            productName.value,
+                            productType.value,
+                            productPrice.value,
+                            productImageLink.value
+                        ), context
+                    )
                     navController.navigate(Screen.ViewCategory.route)
                 }
 
-            },
-            modifier = Modifier
+            }, modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth()
         ) {
@@ -186,34 +189,31 @@ fun UpdateProductScreen(
 fun updateProductToFirestore(product: Product, context: Context) {
     val db = Firebase.firestore
 
-    db.collection("Products")
-        .document(product.productId.toString())
-        .set(product)
+    db.collection("Products").document(product.productId.toString()).set(product)
         .addOnSuccessListener {
             Toast.makeText(context, "Product updated successfully", Toast.LENGTH_SHORT).show()
-        }
-        .addOnFailureListener { e ->
+        }.addOnFailureListener { e ->
             Toast.makeText(context, "Error updating product", Toast.LENGTH_SHORT).show()
 
-    }
-}
-
-fun updateProductToFirestore(id: String?,
-                             name: String?,
-                             type: String?,
-                             price: String?,
-                             linkImage: String?,
-                             context: Context,) {
-
-    val db = Firebase.firestore
-    val updateProduct = Product(id, name, type, price, linkImage)
-    db.collection("Products")
-        .document(id.toString())
-        .set(updateProduct)
-        .addOnSuccessListener {
-            Toast.makeText(context, "Product updated successfully", Toast.LENGTH_SHORT).show()
-        }
-        .addOnFailureListener { e ->
-            Toast.makeText(context, "Error updating product", Toast.LENGTH_SHORT).show()
         }
 }
+
+//fun updateProductToFirestore(id: String?,
+//                             name: String?,
+//                             type: String?,
+//                             price: String?,
+//                             linkImage: String?,
+//                             context: Context,) {
+//
+//    val db = Firebase.firestore
+//    val updateProduct = Product(id, name, type, price, linkImage)
+//    db.collection("Products")
+//        .document(id.toString())
+//        .set(updateProduct)
+//        .addOnSuccessListener {
+//            Toast.makeText(context, "Product updated successfully", Toast.LENGTH_SHORT).show()
+//        }
+//        .addOnFailureListener { e ->
+//            Toast.makeText(context, "Error updating product", Toast.LENGTH_SHORT).show()
+//        }
+//}

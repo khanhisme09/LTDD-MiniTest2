@@ -1,6 +1,12 @@
 package com.example.minitest2
 
+import android.Manifest
+import android.app.AlertDialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.service.controls.ControlsProviderService.TAG
 import android.util.Log
 import android.widget.Toast
@@ -24,6 +30,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,9 +44,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.minitest2.ContextUtils.isContextValid
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import java.net.URLEncoder
@@ -74,7 +85,8 @@ fun ViewCategoryScreen(navController: NavController) {
                 Box(
                     modifier = Modifier
                         .weight(3f)
-                        .padding(end = 10.dp).border(1.dp, Color.Black)
+                        .padding(end = 10.dp)
+                        .border(1.dp, Color.Black)
                 ) {
                     DisplayImageFromUrl(product = item)
                 }
@@ -184,29 +196,29 @@ fun DisplayImageFromUrl(product: Product) {
     }
 }
 
-fun getProductsFromFirestore(products: MutableState<List<Product>>) {
-    val db = Firebase.firestore
-    db.collection("Products")
-        .get()
-        .addOnSuccessListener { result ->
-            val productList = result.map { document ->
-                Product(
-//                    productId = document.id,
-                    productId = document.getString("productId"),
-                    productName = document.getString("productName"),
-                    productType = document.getString("productType"),
-                    productPrice = document.getString("productPrice"),
-                    productImageLink = document.getString("productImageLink")
-                )
-            }
+    fun getProductsFromFirestore(products: MutableState<List<Product>>) {
+        val db = Firebase.firestore
+        db.collection("Products")
+            .get()
+            .addOnSuccessListener { result ->
+                val productList = result.map { document ->
+                    Product(
+                        productId = document.id,
+                       // productId = document.getString("productId"),
+                        productName = document.getString("productName"),
+                        productType = document.getString("productType"),
+                        productPrice = document.getString("productPrice"),
+                        productImageLink = document.getString("productImageLink")
+                    )
+                }
 
-            products.value = productList
-        }
-        .addOnFailureListener { exception ->
-            Toast.makeText(null, "Failed to load data", Toast.LENGTH_SHORT).show()
-            Log.w(TAG, "Failed to load data: ", exception)
-        }
-}
+                products.value = productList
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(null, "Failed to load data", Toast.LENGTH_SHORT).show()
+                Log.w(TAG, "Failed to load data: ", exception)
+            }
+    }
 
 fun deleteProductFromFirestore(
     productId: String?,
@@ -232,14 +244,62 @@ fun deleteProductFromFirestore(
 }
 
 fun showProductInfo(productInfo: String?, context: Context) {
-    if (productInfo != null) {
-        Toast.makeText(context, "Product ID: $productInfo", Toast.LENGTH_SHORT).show()
+    if (isContextValid(context)) {
+        if (productInfo != null) {
+            Log.d("MyApp", "View "+context)
+//            AlertDialog.Builder(context)
+//                .setTitle("Product updated")
+//                .setMessage("Product updated successfully")
+//                .setPositiveButton(android.R.string.yes, null)
+//                .setIcon(android.R.drawable.ic_dialog_alert)
+//                .show()
+
+//            val channelId = "product_update_channel"
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                val name = "Product Update"
+//                val descriptionText = "Notifications about product updates"
+//                val importance = NotificationManager.IMPORTANCE_DEFAULT
+//                val channel = NotificationChannel(channelId, name, importance).apply {
+//                    description = descriptionText
+//                }
+//                val notificationManager: NotificationManager =
+//                    context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+//                notificationManager.createNotificationChannel(channel)
+//            }
+//
+//            var builder = NotificationCompat.Builder(context, channelId)
+//                .setSmallIcon(coil.base.R.drawable.notification_bg)
+//                .setContentTitle("Product updated")
+//                .setContentText("Product updated successfully")
+//                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+//
+//            with(NotificationManagerCompat.from(context)) {
+//                if (ActivityCompat.checkSelfPermission(
+//                        context,
+//                        Manifest.permission.POST_NOTIFICATIONS
+//                    ) != PackageManager.PERMISSION_GRANTED
+//                ) {
+//                    // TODO: Consider calling
+//                    //    ActivityCompat#requestPermissions
+//                    // here to request the missing permissions, and then overriding
+//                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//                    //                                          int[] grantResults)
+//                    // to handle the case where the user grants the permission. See the documentation
+//                    // for ActivityCompat#requestPermissions for more details.
+//                    return
+//                }
+//                val notificationId =0
+//                notify(notificationId, builder.build())
+//            }
+
+        //Toast.makeText(context, "Product ID: $productInfo", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "Product ID is null", Toast.LENGTH_SHORT).show()
+        }
     } else {
-        Toast.makeText(context, "Product ID is null", Toast.LENGTH_SHORT).show()
+        Log.d("MyApp", "Context is not valid")
     }
 }
-
-
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun PreviewViewCategoryScreen() {
